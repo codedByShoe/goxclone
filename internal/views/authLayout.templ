@@ -1,0 +1,121 @@
+package views
+
+import "github.com/codedbyshoe/goxclone/internal/services/forms"
+
+templ AuthLayout(title string, authForm *forms.AuthenticateUserForm, registerForm *forms.CreateUserForm) {
+	@layoutHead(title)
+	<body class="font-sans antialiased">
+		<div
+			x-data="{
+    showLoginForm: false,
+    showSignUpForm: false,
+    checkQueryParams() {
+        const queryParams = new URLSearchParams(window.location.search);
+        const value = queryParams.toString().split('=')[0];
+        if(value === 'showloginform') {
+          this.showLoginForm = true;
+        }
+        if(value === 'showsignupform'){
+          this.showSignUpForm = true;
+        }
+      }
+    }"
+			x-init="checkQueryParams()"
+			class="flex w-full h-screen"
+		>
+			// left
+			<div class=" w-full flex items-center justify-center">
+				@XIcon("size-64 text-white")
+			</div>
+			// right
+			<div class="w-full text-white flex flex-col items-start justify-center p-4">
+				<h4 class="text-3xl font-extrabold pb-6">Join today.</h4>
+				<h1 class="text-6xl font-extrabold py-12">Happening Now</h1>
+				<div>
+					<button x-on:click="showSignUpForm = true" class="block w-full bg-[#1c9cef] py-2 rounded-full font-bold">Create account</button>
+					<p class="text-xl font-extrabold py-6">Already have an account?</p>
+					<button x-on:click="showLoginForm = true" class="rounded-full px-4 py-2 w-full bg-black text-[#1c9cef] font-bold border border-gray-400 hover:bg-[#1c9cef]/10 transition-colors">Sign In</button>
+				</div>
+			</div>
+			@Modal(loginForm(authForm), "showLoginForm")
+			@Modal(signUpForm(registerForm), "showSignUpForm")
+		</div>
+		@layoutScripts()
+	</body>
+}
+
+templ loginForm(form *forms.AuthenticateUserForm) {
+	<div class="p-4 max-w-xl mx-auto space-y-6 pb-12">
+		<div class="flex items-center justify-center">
+			@XIcon("size-8 text-white")
+		</div>
+		<h1 class="text-white font-extrabold text-4xl text-center">Sign in to X</h1>
+		if form.FormErrors.Global != "" {
+			<div class="bg-red-500 rounded-full">
+				<p class="text-white text-center">{ form.FormErrors.Global }</p>
+			</div>
+		}
+		<form method="POST" action="/auth/login" class="w-full flex flex-col items-center justify-center">
+			<div class="my-3 w-full">
+				<input type="email" name="email" id="email" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Email"/>
+				if form.FormErrors.Errors["email"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["email"] }</span>
+				}
+			</div>
+			<div class="my-3 w-full">
+				<input type="password" name="password" id="password" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Password"/>
+				if form.FormErrors.Errors["password"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["password"] }</span>
+				}
+			</div>
+			<button type="submit" class="my-3 w-full py-2 rounded-full bg-white text-black">Login</button>
+		</form>
+	</div>
+}
+
+templ signUpForm(form *forms.CreateUserForm) {
+	<div class="p-4 max-w-xl mx-auto space-y-6 pb-12">
+		<div class="flex items-center justify-center">
+			@XIcon("size-8 text-white")
+		</div>
+		<h1 class="text-white font-extrabold text-4xl text-center">Create an X account</h1>
+		if form.FormErrors.Global != "" {
+			<div class="bg-red-500 rounded-full">
+				<p class="text-white text-center">{ form.FormErrors.Global }</p>
+			</div>
+		}
+		<form method="POST" action="/auth/create" class="w-full flex flex-col items-center justify-center">
+			<div class="my-3 w-full">
+				<input type="text" name="name" id="name" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Your Name"/>
+				if form.FormErrors.Errors["name"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["name"] }</span>
+				}
+			</div>
+			<div class="my-3 w-full">
+				<input type="text" name="username" id="username" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Desired Username"/>
+				if form.FormErrors.Errors["username"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["username"] }</span>
+				}
+			</div>
+			<div class="my-3 w-full">
+				<input type="email" name="email" id="email" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Email"/>
+				if form.FormErrors.Errors["email"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["email"] }</span>
+				}
+			</div>
+			<div class="my-3 w-full">
+				<input type="password" name="password" id="password" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Password"/>
+				if form.FormErrors.Errors["password"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["password"] }</span>
+				}
+			</div>
+			<div class="my-3 w-full">
+				<input type="password" name="confirm_password" id="confirm_password" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Confirm Password"/>
+				if form.FormErrors.Errors["confirm_password"] != "" {
+					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["confirm_password"] }</span>
+				}
+			</div>
+			<button type="submit" class="my-3 w-full py-2 rounded-full bg-white text-black">Create Account</button>
+		</form>
+	</div>
+}

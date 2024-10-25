@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+  display: none !important;
+}
+
+body {
+  background-color: black;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
