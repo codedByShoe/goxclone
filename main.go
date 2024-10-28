@@ -26,20 +26,21 @@ func main() {
 		&models.Post{},
 		&models.Comment{},
 		&models.Like{},
+		&models.Repost{},
 		&models.Notification{},
 	)
 
 	ur := repo.NewUserRepo(db)
 	sr := repo.NewSessionRepo(db)
-	ph := handlers.NewPostHandler(db)
-	ah := handlers.NewAuthHandler(db, ur, sr)
+	pr := repo.NewPostRepo(db)
+	ph := handlers.NewPostHandler(pr)
+	ah := handlers.NewAuthHandler(db, ur, sr, "access_token")
 	auth := middleware.NewAuthMiddleware(sr, "access_token")
 
 	router := chi.NewRouter()
 
 	router.Group(func(r chi.Router) {
-		r.Use(auth.AddUserToContext)
-		router.Mount("/", auth.RequireAuth(ph))
+		router.Mount("/", auth.AddUserToContext(auth.RequireAuth(ph)))
 	})
 
 	router.Group(func(r chi.Router) {

@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -28,8 +27,9 @@ var UserKey UserContextKey = "user"
 
 func (m *AuthMiddleware) RequireGuest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if hasCookie(r) {
-			http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		_, ok := m.hasValidCookie(r)
+		if ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -38,7 +38,8 @@ func (m *AuthMiddleware) RequireGuest(next http.Handler) http.Handler {
 
 func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !hasCookie(r) {
+		_, ok := m.hasValidCookie(r)
+		if !ok {
 			http.Redirect(w, r, "/auth", http.StatusSeeOther)
 			return
 		}
@@ -48,45 +49,49 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 
 func (m *AuthMiddleware) AddUserToContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		sessionCookie, err := r.Cookie(m.sessionCookieName)
-		if err != nil {
-			fmt.Println("error getting session cookie", err)
+		user, ok := m.hasValidCookie(r)
+		if !ok {
 			next.ServeHTTP(w, r)
 			return
 		}
-
-		decodedValue, err := base64.StdEncoding.DecodeString(sessionCookie.Value)
-		if err != nil {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		splitValue := strings.Split(string(decodedValue), ":")
-
-		if len(splitValue) != 2 {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		sessionID := splitValue[0]
-		userID := splitValue[1]
-
-		fmt.Println("sessionID", sessionID)
-		fmt.Println("userID", userID)
-
-		user, err := m.sessionRepo.GetUserFromSession(sessionID, userID)
-		if err != nil {
-			next.ServeHTTP(w, r)
-			return
-		}
-
 		ctx := context.WithValue(r.Context(), UserKey, user)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func hasCookie(r *http.Request) bool {
-	_, err := r.Cookie("access_token")
-	return err == nil
+func (m *AuthMiddleware) hasValidCookie(r *http.Request) (*models.User, bool) {
+	sessionCookie, err := r.Cookie(m.sessionCookieName)
+	if err != nil {
+		return nil, false
+	}
+
+	decodedValue, err := base64.StdEncoding.DecodeString(sessionCookie.Value)
+	if err != nil {
+		return nil, false
+	}
+
+	splitValue := strings.Split(string(decodedValue), ":")
+
+	if len(splitValue) != 2 {
+		return nil, false
+	}
+
+	sessionID := splitValue[0]
+	userID := splitValue[1]
+
+	user, err := m.sessionRepo.GetUserFromSession(sessionID, userID)
+	if err != nil {
+		return nil, false
+	}
+	return user, true
+}
+
+func GetUser(ctx context.Context) *models.User {
+	user := ctx.Value(UserKey)
+	if user == nil {
+		return nil
+	}
+
+	return user.(*models.User)
 }

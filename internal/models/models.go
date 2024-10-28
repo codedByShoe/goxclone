@@ -64,3 +64,11 @@ type SessionRepo interface {
 	CreateSession(session *Session) (*Session, error)
 	GetUserFromSession(sessionID string, userID string) (*User, error)
 }
+
+type PostRepo interface {
+	CreatePost(*Post) error
+	GetUsersPosts(userid uint) ([]Post, error)
+	GetPost(postId uint) (Post, error)
+	UpdatePost(postId uint, user_id uint, conent string) (*Post, error)
+	DeletePost(postId uint, userId uint) error
+}

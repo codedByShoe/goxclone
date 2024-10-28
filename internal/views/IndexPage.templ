@@ -1,163 +1,168 @@
 package views
 
 import (
-	"github.com/codedbyshoe/goxclone/internal/models"
-	"strconv"
+"fmt"
+"github.com/codedbyshoe/goxclone/internal/middleware"
+"github.com/codedbyshoe/goxclone/internal/models"
+"strconv"
 )
 
 templ IndexPage(posts []models.Post) {
-	@homePageHeader()
-	<div class="absolute top-0 z-0 h-full w-full overflow-auto scrollbar-hide">
-		<div class="mt-[84px]"></div>
-		// form here
-		<div class="hidden md:flex border-b border-b-gray-700">
-			@userImage()
-			<div class="pl-4 w-full">
-				<div class="font-extrabold flex items-center justify-between mt-0.5 mb-1.5">
-					<div class="w-[calc(100%-60px)]">
-						<div class="inline-block">
-							<div class="flex items-center border border-gray-700 rounded-full">
-								<span class="text-[#1c9cef] p-0.5 pl-3.5 font-extrabold">Everyone</span>
-								<span class="pr-2.5">
-									@ChevronDownIcon(" size-4 text-[#1c9cef]")
-								</span>
-							</div>
-						</div>
-						<form>
-							<div>
-								<textarea
-									cols="30"
-									placeholder="What is Happening?!"
-									x-model="post"
-									name="content"
-									class="w-full bg-black border-0 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[60px]"
-								></textarea>
-							</div>
-							<div class="w-full">
-								<!-- <video controls v-if="uploadType === 'mp4'" :src="showUpload" class="rounded-xl overflow-auto"></video> -->
-								<img class="rounded-xl min-w-full"/>
-							</div>
-							<div class="flex py-2 items-center text-[#1c9cef] font-extrabold">
-								@EarthIcon("size-6 text-[#1c9cef]")
-								Everyone can reply
-							</div>
-							<div class="border-b border-b-gray-700"></div>
-							<div class="flex items-center justify-between py-2">
-								<div class="flex-items-center">
-									<div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-										<label for="fileUpload" class="cursor-pointer">
-											@PhotoIcon("text-[#1c9cef] size-6")
-										</label>
-										<input type="file" id="fileUpload" class="hidden"/>
-									</div>
-									<div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-										@GifIcon("text-[#1c9cef] size-6")
-									</div>
-									<div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-										@SmileIcon("text-[#1c9cef] size-6")
-									</div>
-								</div>
-								<button
-									:disabled="!post"
-									:class="post? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'"
-									class="hidden md:block font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer"
-								>
-									Post
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="text-white">
-			for _, post := range posts {
-				@postCard(post)
-			}
-			<div class="border-b border-b-gray-800 mt-2"></div>
-		</div>
-		<div class="pb-4"></div>
-	</div>
+@homePageHeader()
+<div class="absolute top-0 z-0 h-full w-full overflow-auto scrollbar-hide">
+  <div class="mt-[84px]"></div>
+  // form here
+  <div class="hidden md:flex border-b border-b-gray-700">
+    @userImage()
+    <div class="pl-4 w-full">
+      <div class="font-extrabold flex items-center justify-between mt-0.5 mb-1.5">
+        <div class="w-[calc(100%-60px)]">
+          <div class="inline-block">
+            <div class="flex items-center border border-gray-700 rounded-full">
+              <span class="text-[#1c9cef] p-0.5 pl-3.5 font-extrabold">Everyone</span>
+              <span class="pr-2.5">
+                @ChevronDownIcon(" size-4 text-[#1c9cef]")
+              </span>
+            </div>
+          </div>
+          <form id="addPostForm" action="/posts" method="POST">
+            <div>
+              <textarea cols="30" placeholder="What is Happening?!" x-model="post" name="content"
+                class="w-full bg-black border-0 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[60px]"></textarea>
+            </div>
+            <input type="hidden" name="user_id" value={ strconv.Itoa(int(middleware.GetUser(ctx).ID)) } />
+            <div class="w-full">
+              <!-- <video controls v-if="uploadType === 'mp4'" :src="showUpload" class="rounded-xl overflow-auto"></video> -->
+              <img class="rounded-xl min-w-full" />
+            </div>
+            <div class="flex py-2 items-center text-[#1c9cef] font-extrabold">
+              @EarthIcon("size-6 text-[#1c9cef]")
+              Everyone can reply
+            </div>
+            <div class="border-b border-b-gray-700"></div>
+            <div class="flex items-center justify-between py-2">
+              <div class="flex-items-center">
+                <div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+                  <label for="fileUpload" class="cursor-pointer">
+                    @PhotoIcon("text-[#1c9cef] size-6")
+                  </label>
+                  <input type="file" id="fileUpload" class="hidden" />
+                </div>
+                <div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+                  @GifIcon("text-[#1c9cef] size-6")
+                </div>
+                <div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+                  @SmileIcon("text-[#1c9cef] size-6")
+                </div>
+              </div>
+              <button :disabled="!post" :class="post? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'"
+                class="hidden md:block font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer">
+                Post
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="posts_list" class="text-white">
+    for _, post := range posts {
+    @postCard(post)
+    }
+    <div class="border-b border-b-gray-800 mt-2"></div>
+  </div>
+  <div class="pb-4"></div>
+</div>
 }
 
 templ postCard(post models.Post) {
-	<div class="flex">
-		@userImage()
-		<div x-data="{ postOptionsOpen: false }" class="p-2 w-full">
-			<div class="font-extrabold flex items-center justify-between mt-0.5 mb-1.5">
-				<div class="flex items-center">
-					<div class="ml-2">{ post.User.Name }</div>
-					<span class="font-[300] text-[15px] text-gray-500 pl-2">{ "@" + post.User.Username }</span>
-				</div>
-				<div class="hover:bg-gray-800 rounded-full cursor-pointer relative">
-					<button x-on:click="postOptionsOpen = !postOptionsOpen" class="block p-2">
-						@EllipsisHorizontal("size-6 text-white")
-					</button>
-					<div x-show="postOptionsOpen" x-cloak class="absolute mt-1 p-3 right-0 w-[300px] bg-black border border-gray-700 rounded-lg shadow-lg">
-						<a method="delete" href="route('tweets.destroy', { id: tweet.id })" class="flex items-center cursor-pointer">
-							@TrashIcon("size-6 text-[#dc2626]")
-							<span class="text-red-600 font-extrabold">Delete</span>
-						</a>
-					</div>
-				</div>
-			</div>
-			<div class="pb-3 ml-2">{ post.Content }</div>
-			<div v-if="tweet.file">
-				<div v-if="!tweet.is_video" class="rounded-xl">
-					//<img :src="tweet.file" class="mt-2 object-fill rounded-xl w-full" alt=""/>
-				</div>
-				<div v-else>
-					//<video class="rounded-xl" :src="tweet.file" controls></video>
-				</div>
-			</div>
-			<div class="flex items-center justify-between mt-4 w-4/5">
-				<div class="flex">
-					@ChatBubbleIcon("size-4 text-[#5e5c5c]")
-					<span class="text-xs font-extrablod text-[#5e5c5c] ml-3">{ strconv.Itoa(len(post.Comments)) }</span>
-				</div>
-				<div class="flex">
-					@RepostIcon("size-4 text-[#5e5c5c]")
-					<span class="text-xs font-extrablod text-[#5e5c5c] ml-3">{ strconv.Itoa(len(post.Reposts)) }</span>
-				</div>
-				<div class="flex">
-					@HeartIcon("size-4 text-[#5e5c5c]")
-					<span class="text-xs font-extrablod text-[#5e5c5c] ml-3">{ strconv.Itoa(len(post.Likes)) }</span>
-				</div>
-				<div class="flex">
-					@ChartIcon("size-4 text-[#5e5c5c]")
-					//TODO: Work on implementing impressions
-					<span class="text-xs font-extrablod text-[#5e5c5c] ml-3">123</span>
-				</div>
-			</div>
-		</div>
-	</div>
+<div id={ fmt.Sprintf("post_%d", post.ID) } class="flex">
+  @userImage()
+  <div x-data="{ postOptionsOpen: false }" class="p-2 w-full">
+    <div class="font-extrabold flex items-center justify-between mt-0.5 mb-1.5">
+      <div class="flex items-center">
+        <div class="ml-2">{ post.User.Name }</div>
+        <span class="font-[300] text-[15px] text-gray-500 pl-2">{ "@" + post.User.Username }</span>
+      </div>
+      <div class="hover:bg-gray-800 rounded-full cursor-pointer relative">
+        <button x-on:click="postOptionsOpen = !postOptionsOpen" class="block p-2">
+          @EllipsisHorizontal("size-6 text-white")
+        </button>
+        <div x-show="postOptionsOpen" x-cloak
+          class="absolute mt-1 p-3 right-0 w-[300px] bg-black border border-gray-700 rounded-lg shadow-lg">
+          <form x-target="posts_list" method="POST" action="/posts/delete" class="flex items-center">
+            <input type="hidden" name="post_id" value={ strconv.Itoa(int(post.ID)) } />
+            <input type="hidden" name="user_id" value={ strconv.Itoa(int(post.User.ID)) } />
+            <button class="flex items-center space-x-3 hover:bg-gray-800 rounded-lg p-2 w-full" type="submit">
+              @TrashIcon("size-6 text-[#dc2626]")
+              <span class="text-red-600 font-extrabold">Delete</span>
+            </button>
+          </form>
+          <a x-target={ fmt.Sprintf("post_%d", post.ID) } class="hover:bg-gray-800 w-full p-2 rounded-lg" href={
+            templ.SafeURL(templ.URL(fmt.Sprintf("/posts/%d", post.ID))) }>Update Post</a>
+        </div>
+      </div>
+    </div>
+    <div class="pb-3 ml-2 text-white">{ post.Content }</div>
+    <div v-if="tweet.file">
+      <div v-if="!tweet.is_video" class="rounded-xl">
+        //<img :src="tweet.file" class="mt-2 object-fill rounded-xl w-full" alt="" />
+      </div>
+      <div v-else>
+        //<video class="rounded-xl" :src="tweet.file" controls></video>
+      </div>
+    </div>
+    <div class="flex items-center justify-between mt-4 w-4/5">
+      <div class="flex">
+        @ChatBubbleIcon("size-4 text-[#5e5c5c]")
+        <span class="text-xs font-extrablod text-[#5e5c5c] ml-3">{ strconv.Itoa(len(post.Comments)) }</span>
+      </div>
+      <div class="flex">
+        @RepostIcon("size-4 text-[#5e5c5c]")
+        <span class="text-xs font-extrablod text-[#5e5c5c] ml-3">{ strconv.Itoa(len(post.Reposts)) }</span>
+      </div>
+      <div class="flex">
+        @HeartIcon("size-4 text-[#5e5c5c]")
+        <span class="text-xs font-extrablod text-[#5e5c5c] ml-3">{ strconv.Itoa(len(post.Likes)) }</span>
+      </div>
+      <div class="flex">
+        @ChartIcon("size-4 text-[#5e5c5c]")
+        //TODO: Work on implementing impressions
+        <span class="text-xs font-extrablod text-[#5e5c5c] ml-3">123</span>
+      </div>
+    </div>
+  </div>
+</div>
 }
 
 // TODO: Make this actually work with real images
 templ userImage() {
-	<div class="max-w-[50px]">
-		<img class="rounded-full m-2 mt-3 bg-gray-500" src="https://avatars.githubusercontent.com/u/79344687?s=96&v=4" alt="profile photo"/>
-	</div>
+<div class="max-w-[50px]">
+  <img class="rounded-full m-2 mt-3 bg-gray-500" src="https://avatars.githubusercontent.com/u/79344687?s=96&v=4"
+    alt="profile photo" />
+</div>
 }
 
 templ homePageHeader() {
-	<div class="bg-black bg-opacity-50 backdrop-blur-md z-10 absolute w-full">
-		<div class="border-gray-800 border-b w-full">
-			// NOTE: this is only here to use for the post page
-			<!-- <div class="w-full text-white text-[22px] font-extrabold p-4">
+<div class="bg-black bg-opacity-50 backdrop-blur-md z-10 absolute w-full">
+  <div class="border-gray-800 border-b w-full">
+    // NOTE: this is only here to use for the post page
+    <!-- <div class="w-full text-white text-[22px] font-extrabold p-4">
 				Home
 			</div> -->
-			// end note section
-			<div class="flex">
-				<div class="flex items-center justify-center w-full h-[60px] text-white text-[17px] font-extrabold p-4 hover:bg-gray-500 hover:bg-opacity-30 cursor-pointer transition duration-200 ease-in-out">
-					<div class="inline-block text-center border-b-4 border-b-[#1c9cef] h-[60px]">
-						<div class="my-auto mt-4">For you</div>
-					</div>
-				</div>
-				<div class="w-full h-[60px] text-gray-500 text-[17px] font-extrabold p-4 hover:bg-gray-500 hover:bg-opacity-30 cursor-pointer transition duration-200 ease-in-out">
-					<div class="text-center">Following</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    // end note section
+    <div class="flex">
+      <div
+        class="flex items-center justify-center w-full h-[60px] text-white text-[17px] font-extrabold p-4 hover:bg-gray-500 hover:bg-opacity-30 cursor-pointer transition duration-200 ease-in-out">
+        <div class="inline-block text-center border-b-4 border-b-[#1c9cef] h-[60px]">
+          <div class="my-auto mt-4">For you</div>
+        </div>
+      </div>
+      <div
+        class="w-full h-[60px] text-gray-500 text-[17px] font-extrabold p-4 hover:bg-gray-500 hover:bg-opacity-30 cursor-pointer transition duration-200 ease-in-out">
+        <div class="text-center">Following</div>
+      </div>
+    </div>
+  </div>
+</div>
 }

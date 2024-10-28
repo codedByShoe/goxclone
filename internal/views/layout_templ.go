@@ -8,7 +8,13 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Layout(contents templ.Component, pageTitle string) templ.Component {
+import (
+	"github.com/codedbyshoe/goxclone/internal/middleware"
+	"github.com/codedbyshoe/goxclone/internal/services/forms"
+	"strconv"
+)
+
+func Layout(contents templ.Component, pageTitle string, form *forms.CreatePostForm) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -37,7 +43,17 @@ func Layout(contents templ.Component, pageTitle string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body class=\"font-sans antialiased\"><div x-data=\"{\n        createPost: false,\n        post: &#39;&#39;,\n        }\"><div class=\"fixed w-full\"><div class=\"max-w-[1400px] flex mx-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body class=\"font-sans antialiased\"><div x-data=\"{\n        createPost: false,\n        post: &#39;&#39;,\n        }\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if form.FormErrors.Global != "" {
+			templ_7745c5c3_Err = ErrorToast(form.FormErrors.Global).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"fixed w-full\"><div class=\"max-w-[1400px] flex mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +81,7 @@ func Layout(contents templ.Component, pageTitle string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Modal(addPostForm(), "createPost").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Modal(addPostForm(form), "createPost").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -113,7 +129,7 @@ func layoutHead(title string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 37, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 47, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -269,7 +285,7 @@ func layoutRightColumn() templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("@" + "codedbyshoe")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 84, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 93, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -290,7 +306,7 @@ func layoutRightColumn() templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("@" + "codedbyshoe")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 92, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 101, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -311,7 +327,7 @@ func layoutRightColumn() templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("@" + "codedbyshoe")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 100, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 109, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -353,7 +369,7 @@ func Modal(contents templ.Component, showOn string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(showOn)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 112, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 118, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -366,7 +382,7 @@ func Modal(contents templ.Component, showOn string) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(showOn + " = !" + showOn)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 122, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 123, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -400,7 +416,7 @@ func Modal(contents templ.Component, showOn string) templ.Component {
 	})
 }
 
-func addPostForm() templ.Component {
+func addPostForm(form *forms.CreatePostForm) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -421,7 +437,7 @@ func addPostForm() templ.Component {
 			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center justify-between md:inline-block p-2 m-2 rounded-full cursor-pointer\"><button :disabled=\"!post\" :class=\"post ? &#39;bg-[#1c9cef] text-white&#39; : &#39;bg-[#124d77] text-gray-400&#39;\" class=\"md:hidden font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer\">Post</button><div class=\"w-full flex\"><div class=\"ml-3.5 mr-2\"><!-- <img class=\"rounded-full\" width=\"55\" src=\"randImg1\"/> --></div><div class=\"w-[calc(100%-100px)]\"><div class=\"inline-block\"><div class=\"flex items-center border border-gray-700 rounded-full\"><span class=\"text-[#1c9cef] p-0.5 pl-3.5 font-extrabold\">Everyone</span> <span class=\"pr-2.5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center justify-between md:inline-block p-2 m-2 rounded-full cursor-pointer\"><button :disabled=\"!post\" :class=\"post ? &#39;bg-[#1c9cef] text-white&#39; : &#39;bg-[#124d77] text-gray-400&#39;\" class=\"md:hidden font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer\">Post</button><div class=\"w-full flex\"><div class=\"ml-3.5 mr-2\"><!-- <img class=\"rounded-full\" width=\"55\" src=\"randImg1\"/> --></div><div class=\"w-full\"><div class=\"inline-block\"><div class=\"flex items-center border border-gray-700 rounded-full\"><span class=\"text-[#1c9cef] p-0.5 pl-3.5 font-extrabold\">Everyone</span> <span class=\"pr-2.5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -429,7 +445,43 @@ func addPostForm() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div><div><textarea cols=\"30\" rows=\"4\" placeholder=\"What is Happening?!\" x-model=\"post\" ref=\"textarea\" class=\"w-full bg-black border-0 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[120px]\"></textarea></div><div class=\"w-full\"><!-- <video controls v-if=\"uploadType === 'mp4'\" :src=\"showUpload\" class=\"rounded-xl overflow-auto\"></video> --><img class=\"rounded-xl min-w-full\"></div><div class=\"flex py-2 items-center text-[#1c9cef] font-extrabold\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div><div><form x-target=\"posts_list addPostForm addPostFormModal\" id=\"addPostFormModal\" method=\"POST\" action=\"/posts\" class=\"w-full\"><textarea cols=\"50\" rows=\"4\" placeholder=\"What is Happening?!\" x-model=\"post\" ref=\"textarea\" name=\"content\" class=\"w-full bg-black border-0 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[120px]\"></textarea> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if form.FormErrors.Errors["content"] != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"text-red-500 text-xs\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["content"])
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 157, Col: 80}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"user_id\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var15 string
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(middleware.GetUser(ctx).ID)))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 159, Col: 99}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></form></div><div class=\"w-full\"><!-- <video controls v-if=\"uploadType === 'mp4'\" :src=\"showUpload\" class=\"rounded-xl overflow-auto\"></video> --><img class=\"rounded-xl min-w-full\"></div><div class=\"flex py-2 items-center text-[#1c9cef] font-extrabold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -461,7 +513,49 @@ func addPostForm() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><button :disabled=\"!post\" :class=\"post? &#39;bg-[#1c9cef] text-white&#39; : &#39;bg-[#124d77] text-gray-400&#39;\" class=\"hidden md:block font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer\">Post</button></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><button :disabled=\"!post\" :class=\"post? &#39;bg-[#1c9cef] text-white&#39; : &#39;bg-[#124d77] text-gray-400&#39;\" type=\"submit\" form=\"addPostForm\" class=\"hidden md:block font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer\">Post</button></div></div></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func ErrorToast(message string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var16 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var16 == nil {
+			templ_7745c5c3_Var16 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"error_toast\" class=\"absolute right-24 top-100 bottom-10 z-50 w-96 \"><p class=\"text-white bg-red-500/60 border border-red-500 rounded-xl p-4 text-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var17 string
+		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 199, Col: 13}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

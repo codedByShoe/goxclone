@@ -1,0 +1,22 @@
+package views
+
+import (
+"fmt"
+"github.com/codedbyshoe/goxclone/internal/models"
+)
+
+templ EditPostPage(post models.Post) {
+<div id={ fmt.Sprintf("post_%d", post.ID) }>
+  <form x-target="posts_list" id="editPostForm" method="POST" action={ templ.SafeURL(templ.URL(fmt.Sprintf("/posts/%d",
+    post.ID))) } class="w-full px-4 space-y-3">
+    <textarea cols="50" rows="4" name="content"
+      class="w-full bg-black border rounded-lg p-2 border-gray-800 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[120px]">
+      { post.Content }
+    </textarea>
+    <input type="hidden" name="user_id" value={ fmt.Sprintf("%d", post.User.ID) } />
+    <div class="flex items-center justify-end">
+      <button class="p-2 text-white rounded-full bg-[#1c9cef]">Update</button>
+    </div>
+  </form>
+</div>
+}

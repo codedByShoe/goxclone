@@ -23,6 +23,12 @@ templ AuthLayout(title string, authForm *forms.AuthenticateUserForm, registerFor
 			x-init="checkQueryParams()"
 			class="flex w-full h-screen"
 		>
+			if authForm.FormErrors.Global != "" {
+				@ErrorToast(authForm.FormErrors.Global)
+			}
+			if registerForm.FormErrors.Global != "" {
+				@ErrorToast(registerForm.FormErrors.Global)
+			}
 			// left
 			<div class=" w-full flex items-center justify-center">
 				@XIcon("size-64 text-white")
@@ -32,9 +38,18 @@ templ AuthLayout(title string, authForm *forms.AuthenticateUserForm, registerFor
 				<h4 class="text-3xl font-extrabold pb-6">Join today.</h4>
 				<h1 class="text-6xl font-extrabold py-12">Happening Now</h1>
 				<div>
-					<button x-on:click="showSignUpForm = true" class="block w-full bg-[#1c9cef] py-2 rounded-full font-bold">Create account</button>
+					<button x-on:click="showSignUpForm = true" class="block w-full bg-[#1c9cef] py-2 rounded-full font-bold">
+						Create
+						account
+					</button>
 					<p class="text-xl font-extrabold py-6">Already have an account?</p>
-					<button x-on:click="showLoginForm = true" class="rounded-full px-4 py-2 w-full bg-black text-[#1c9cef] font-bold border border-gray-400 hover:bg-[#1c9cef]/10 transition-colors">Sign In</button>
+					<button
+						x-on:click="showLoginForm = true"
+						class="rounded-full px-4 py-2 w-full bg-black text-[#1c9cef] font-bold border border-gray-400 hover:bg-[#1c9cef]/10 transition-colors"
+					>
+						Sign
+						In
+					</button>
 				</div>
 			</div>
 			@Modal(loginForm(authForm), "showLoginForm")
@@ -57,13 +72,25 @@ templ loginForm(form *forms.AuthenticateUserForm) {
 		}
 		<form method="POST" action="/auth/login" class="w-full flex flex-col items-center justify-center">
 			<div class="my-3 w-full">
-				<input type="email" name="email" id="email" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Email"/>
+				<input
+					type="email"
+					name="email"
+					id="email"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Email"
+				/>
 				if form.FormErrors.Errors["email"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["email"] }</span>
 				}
 			</div>
 			<div class="my-3 w-full">
-				<input type="password" name="password" id="password" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Password"/>
+				<input
+					type="password"
+					name="password"
+					id="password"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Password"
+				/>
 				if form.FormErrors.Errors["password"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["password"] }</span>
 				}
@@ -86,31 +113,61 @@ templ signUpForm(form *forms.CreateUserForm) {
 		}
 		<form method="POST" action="/auth/create" class="w-full flex flex-col items-center justify-center">
 			<div class="my-3 w-full">
-				<input type="text" name="name" id="name" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Your Name"/>
+				<input
+					type="text"
+					name="name"
+					id="name"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Your Name"
+				/>
 				if form.FormErrors.Errors["name"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["name"] }</span>
 				}
 			</div>
 			<div class="my-3 w-full">
-				<input type="text" name="username" id="username" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Desired Username"/>
+				<input
+					type="text"
+					name="username"
+					id="username"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Desired Username"
+				/>
 				if form.FormErrors.Errors["username"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["username"] }</span>
 				}
 			</div>
 			<div class="my-3 w-full">
-				<input type="email" name="email" id="email" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Email"/>
+				<input
+					type="email"
+					name="email"
+					id="email"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Email"
+				/>
 				if form.FormErrors.Errors["email"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["email"] }</span>
 				}
 			</div>
 			<div class="my-3 w-full">
-				<input type="password" name="password" id="password" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Password"/>
+				<input
+					type="password"
+					name="password"
+					id="password"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Password"
+				/>
 				if form.FormErrors.Errors["password"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["password"] }</span>
 				}
 			</div>
 			<div class="my-3 w-full">
-				<input type="password" name="confirm_password" id="confirm_password" class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2" placeholder="Confirm Password"/>
+				<input
+					type="password"
+					name="confirm_password"
+					id="confirm_password"
+					class="w-full bg-black border border-gray-800 mt-2 focus:ring-0 text-white font-extrabold rounded-md p-2"
+					placeholder="Confirm Password"
+				/>
 				if form.FormErrors.Errors["confirm_password"] != "" {
 					<span class="text-red-500 text-xs">{ form.FormErrors.Errors["confirm_password"] }</span>
 				}

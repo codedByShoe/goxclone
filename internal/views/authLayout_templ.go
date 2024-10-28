@@ -35,7 +35,23 @@ func AuthLayout(title string, authForm *forms.AuthenticateUserForm, registerForm
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body class=\"font-sans antialiased\"><div x-data=\"{\n    showLoginForm: false,\n    showSignUpForm: false,\n    checkQueryParams() {\n        const queryParams = new URLSearchParams(window.location.search);\n        const value = queryParams.toString().split(&#39;=&#39;)[0];\n        if(value === &#39;showloginform&#39;) {\n          this.showLoginForm = true;\n        }\n        if(value === &#39;showsignupform&#39;){\n          this.showSignUpForm = true;\n        }\n      }\n    }\" x-init=\"checkQueryParams()\" class=\"flex w-full h-screen\"><div class=\" w-full flex items-center justify-center\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<body class=\"font-sans antialiased\"><div x-data=\"{\n    showLoginForm: false,\n    showSignUpForm: false,\n    checkQueryParams() {\n        const queryParams = new URLSearchParams(window.location.search);\n        const value = queryParams.toString().split(&#39;=&#39;)[0];\n        if(value === &#39;showloginform&#39;) {\n          this.showLoginForm = true;\n        }\n        if(value === &#39;showsignupform&#39;){\n          this.showSignUpForm = true;\n        }\n      }\n    }\" x-init=\"checkQueryParams()\" class=\"flex w-full h-screen\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if authForm.FormErrors.Global != "" {
+			templ_7745c5c3_Err = ErrorToast(authForm.FormErrors.Global).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if registerForm.FormErrors.Global != "" {
+			templ_7745c5c3_Err = ErrorToast(registerForm.FormErrors.Global).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\" w-full flex items-center justify-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,7 +128,7 @@ func loginForm(form *forms.AuthenticateUserForm) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Global)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 55, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 70, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -135,7 +151,7 @@ func loginForm(form *forms.AuthenticateUserForm) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["email"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 62, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 83, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -158,7 +174,7 @@ func loginForm(form *forms.AuthenticateUserForm) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["password"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 68, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 95, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -218,7 +234,7 @@ func signUpForm(form *forms.CreateUserForm) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Global)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 84, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 111, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -241,7 +257,7 @@ func signUpForm(form *forms.CreateUserForm) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["name"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 91, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 124, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -264,7 +280,7 @@ func signUpForm(form *forms.CreateUserForm) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["username"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 97, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 136, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -287,7 +303,7 @@ func signUpForm(form *forms.CreateUserForm) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["email"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 103, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 148, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -310,7 +326,7 @@ func signUpForm(form *forms.CreateUserForm) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["password"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 109, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 160, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -333,7 +349,7 @@ func signUpForm(form *forms.CreateUserForm) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(form.FormErrors.Errors["confirm_password"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 115, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/authLayout.templ`, Line: 172, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {

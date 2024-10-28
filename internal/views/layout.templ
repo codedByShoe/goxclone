@@ -1,198 +1,202 @@
 package views
 
-templ Layout(contents templ.Component, pageTitle string) {
-	<!DOCTYPE html>
-	<html lang="en">
-		@layoutHead(pageTitle)
-		<body class="font-sans antialiased">
-			<div
-				x-data="{
+import (
+"github.com/codedbyshoe/goxclone/internal/middleware"
+"github.com/codedbyshoe/goxclone/internal/services/forms"
+"strconv"
+)
+
+templ Layout(contents templ.Component, pageTitle string, form *forms.CreatePostForm) {
+<!DOCTYPE html>
+<html lang="en">
+@layoutHead(pageTitle)
+
+<body class="font-sans antialiased">
+  <div x-data="{
         createPost: false,
         post: '',
-        }"
-			>
-				<div class="fixed w-full">
-					<div class="max-w-[1400px] flex mx-auto">
-						@layoutLeftNavigation()
-						<div class="lg:w-7/12 w-11/12 border-x border-gray-800 relative">
-							@contents
-						</div>
-						@layoutRightColumn()
-					</div>
-				</div>
-				// Add Tweet overlay
-				@Modal(addPostForm(), "createPost")
-			</div>
-			@layoutScripts()
-		</body>
-	</html>
+        }">
+    if form.FormErrors.Global != "" {
+    @ErrorToast(form.FormErrors.Global)
+    }
+    <div class="fixed w-full">
+      <div class="max-w-[1400px] flex mx-auto">
+        @layoutLeftNavigation()
+        <div class="lg:w-7/12 w-11/12 border-x border-gray-800 relative">
+          @contents
+        </div>
+        @layoutRightColumn()
+      </div>
+    </div>
+    // Add Tweet overlay
+    @Modal(addPostForm(form), "createPost")
+  </div>
+  @layoutScripts()
+</body>
+
+</html>
 }
 
 templ layoutHead(title string) {
-	<head>
-		<meta charset="UTF-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<link rel="stylesheet" href="/static/css/styles.min.css"/>
-		<link rel="icon" type="image/x-icon" href="/static/img/twitter.3.ico"/>
-		<title>{ title } / X</title>
-	</head>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/css/styles.min.css" />
+  <link rel="icon" type="image/x-icon" href="/static/img/twitter.3.ico" />
+  <title>{ title } / X</title>
+</head>
 }
 
 templ layoutScripts() {
-	<script type="module" src="/static/js/alpine-ajax.min.js"></script>
-	<script type="module" src="/static/js/alpinejs.min.js"></script>
+<script type="module" src="/static/js/alpine-ajax.min.js"></script>
+<script type="module" src="/static/js/alpinejs.min.js"></script>
 }
 
 templ layoutLeftNavigation() {
-	<div class="lg:w-3/12 w-[60px] h-[100vh] max-w-[350px] lg:px-4 lg:mx-auto">
-		<div class="p-2 px-3 mb-4">
-			@XIcon("size-6 text-white")
-		</div>
-		@MenuItem(HomeIcon("size-6 text-white"), "Home")
-		@MenuItem(PoundIcon("size-6 text-white"), "Explore")
-		@MenuItem(BellIcon("size-6 text-white"), "Notifications")
-		@MenuItem(EnvelopeIcon("size-6 text-white"), "Messages")
-		@MenuItem(AccountIcon("size-6 text-white"), "Profile")
-		<button x-on:click="createPost = true" class="lg:w-full mt-8 ml-2 text-white font-extrabold text-[22px] bg-[#1c9cef] p-3 px-3 rounded-full cursor-pointer">
-			<span class="lg:block hidden">Post</span>
-			<span class="lg:hidden block">
-				@PlusIcon("size-4 text-white")
-			</span>
-		</button>
-	</div>
+<div class="lg:w-3/12 w-[60px] h-[100vh] max-w-[350px] lg:px-4 lg:mx-auto">
+  <div class="p-2 px-3 mb-4">
+    @XIcon("size-6 text-white")
+  </div>
+  @MenuItem(HomeIcon("size-6 text-white"), "Home")
+  @MenuItem(PoundIcon("size-6 text-white"), "Explore")
+  @MenuItem(BellIcon("size-6 text-white"), "Notifications")
+  @MenuItem(EnvelopeIcon("size-6 text-white"), "Messages")
+  @MenuItem(AccountIcon("size-6 text-white"), "Profile")
+  <button x-on:click="createPost = true"
+    class="lg:w-full mt-8 ml-2 text-white font-extrabold text-[22px] bg-[#1c9cef] p-3 px-3 rounded-full cursor-pointer">
+    <span class="lg:block hidden">Post</span>
+    <span class="lg:hidden block">
+      @PlusIcon("size-4 text-white")
+    </span>
+  </button>
+</div>
 }
 
 templ layoutRightColumn() {
-	<div class="lg:block hidden lg:w-4/12 h-screen border-l border-gray-800 pl-4">
-		<div class="w-full p-1 mt-2 px-4 lg:flex items-center rounded-full hidden bg-[#212327]">
-			@MagnifyIcon("size-6 text-gray-500 mx-2")
-			<input
-				class="appearance-none w-full border-0 py-2 bg-[#212327] text-gray-100 placeholder-gray-500 leading-tight focus:ring-0"
-				type="search"
-				placeholder="Search"
-			/>
-		</div>
-		<div class="w-full mt-4 rounded-xl lg:block hidden border pb-5 border-gray-800">
-			<div class="w-full p-4 text-white font-extrabold mb-3 text-[20px]">
-				Who To Follow
-			</div>
-			// TODO: Make this dynamic
-			<div class="flex items-center justify-between px-4">
-				@userImage()
-				<div class="">
-					<p class="text-white font-extrabold">Andrew Shoemaker</p>
-					<p class="text-gray-400">{ "@" + "codedbyshoe" }</p>
-				</div>
-				<button class="bg-white px-4 py-2 rounded-full text-black font-bold">Follow</button>
-			</div>
-			<div class="flex items-center justify-between px-4">
-				@userImage()
-				<div class="">
-					<p class="text-white font-extrabold">Andrew Shoemaker</p>
-					<p class="text-gray-400">{ "@" + "codedbyshoe" }</p>
-				</div>
-				<button class="bg-white px-4 py-2 rounded-full text-black font-bold">Follow</button>
-			</div>
-			<div class="flex items-center justify-between px-4">
-				@userImage()
-				<div class="">
-					<p class="text-white font-extrabold">Andrew Shoemaker</p>
-					<p class="text-gray-400">{ "@" + "codedbyshoe" }</p>
-				</div>
-				<button class="bg-white px-4 py-2 rounded-full text-black font-bold">Follow</button>
-			</div>
-		</div>
-	</div>
+<div class="lg:block hidden lg:w-4/12 h-screen border-l border-gray-800 pl-4">
+  <div class="w-full p-1 mt-2 px-4 lg:flex items-center rounded-full hidden bg-[#212327]">
+    @MagnifyIcon("size-6 text-gray-500 mx-2")
+    <input
+      class="appearance-none w-full border-0 py-2 bg-[#212327] text-gray-100 placeholder-gray-500 leading-tight focus:ring-0"
+      type="search" placeholder="Search" />
+  </div>
+  <div class="w-full mt-4 rounded-xl lg:block hidden border pb-5 border-gray-800">
+    <div class="w-full p-4 text-white font-extrabold mb-3 text-[20px]">
+      Who To Follow
+    </div>
+    // TODO: Make this dynamic
+    <div class="flex items-center justify-between px-4">
+      @userImage()
+      <div class="">
+        <p class="text-white font-extrabold">Andrew Shoemaker</p>
+        <p class="text-gray-400">{ "@" + "codedbyshoe" }</p>
+      </div>
+      <button class="bg-white px-4 py-2 rounded-full text-black font-bold">Follow</button>
+    </div>
+    <div class="flex items-center justify-between px-4">
+      @userImage()
+      <div class="">
+        <p class="text-white font-extrabold">Andrew Shoemaker</p>
+        <p class="text-gray-400">{ "@" + "codedbyshoe" }</p>
+      </div>
+      <button class="bg-white px-4 py-2 rounded-full text-black font-bold">Follow</button>
+    </div>
+    <div class="flex items-center justify-between px-4">
+      @userImage()
+      <div class="">
+        <p class="text-white font-extrabold">Andrew Shoemaker</p>
+        <p class="text-gray-400">{ "@" + "codedbyshoe" }</p>
+      </div>
+      <button class="bg-white px-4 py-2 rounded-full text-black font-bold">Follow</button>
+    </div>
+  </div>
+</div>
 }
 
 templ Modal(contents templ.Component, showOn string) {
-	<div
-		id="OverlaySection"
-		x-cloak
-		x-show={ showOn }
-		class="fixed top-0 left-0 w-full h-screen bg-black md:bg-gray-400 md:bg-opacity-30 md:p-3"
-		x-transition:enter="ease-out duration-300"
-		x-transition:enter-start="opacity-0"
-		x-transition:enter-end="opacity-100"
-		x-transition:leave="ease-in duration-300"
-		x-transition:leave-start="opacity-100"
-		x-transition:leave-end="opacity-0"
-	>
-		<div class="md:max-w-2xl md:mx-auto md:mt-10 md:rounded-xl bg-black">
-			<div x-on:click={ showOn + " = !" + showOn } class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-				@CloseIcon("size-6 text-white md:block hidden")
-				@ArrowLeftIcon("size-6 text-white md:hidden block")
-			</div>
-			@contents
-		</div>
-	</div>
+<div id="OverlaySection" x-cloak x-show={ showOn }
+  class="fixed top-0 left-0 w-full h-screen bg-black md:bg-gray-400 md:bg-opacity-30 md:p-3"
+  x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+  x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+  <div class="md:max-w-2xl md:mx-auto md:mt-10 md:rounded-xl bg-black">
+    <div x-on:click={ showOn + " = !" + showOn } class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+      @CloseIcon("size-6 text-white md:block hidden")
+      @ArrowLeftIcon("size-6 text-white md:hidden block")
+    </div>
+    @contents
+  </div>
+</div>
 }
 
-templ addPostForm() {
-	<div class="flex items-center justify-between md:inline-block p-2 m-2 rounded-full cursor-pointer">
-		<button
-			:disabled="!post"
-			:class="post ? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'"
-			class="md:hidden font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer"
-		>
-			Post
-		</button>
-		<div class="w-full flex">
-			<div class="ml-3.5 mr-2">
-				<!-- <img class="rounded-full" width="55" src="randImg1"/> -->
-			</div>
-			<div class="w-[calc(100%-100px)]">
-				<div class="inline-block">
-					<div class="flex items-center border border-gray-700 rounded-full">
-						<span class="text-[#1c9cef] p-0.5 pl-3.5 font-extrabold">Everyone</span>
-						<span class="pr-2.5">
-							@ChevronDownIcon(" size-4 text-[#1c9cef]")
-						</span>
-					</div>
-				</div>
-				<div>
-					<textarea
-						cols="30"
-						rows="4"
-						placeholder="What is Happening?!"
-						x-model="post"
-						ref="textarea"
-						class="w-full bg-black border-0 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[120px]"
-					></textarea>
-				</div>
-				<div class="w-full">
-					<!-- <video controls v-if="uploadType === 'mp4'" :src="showUpload" class="rounded-xl overflow-auto"></video> -->
-					<img class="rounded-xl min-w-full"/>
-				</div>
-				<div class="flex py-2 items-center text-[#1c9cef] font-extrabold">
-					@EarthIcon("size-6 text-[#1c9cef]")
-					Everyone can reply
-				</div>
-				<div class="border-b border-b-gray-700"></div>
-				<div class="flex items-center justify-between py-2">
-					<div class="flex-items-center">
-						<div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-							<label for="fileUpload" class="cursor-pointer">
-								@PhotoIcon("text-[#1c9cef] size-6")
-							</label>
-							<input type="file" id="fileUpload" class="hidden"/>
-						</div>
-						<div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-							@GifIcon("text-[#1c9cef] size-6")
-						</div>
-						<div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
-							@SmileIcon("text-[#1c9cef] size-6")
-						</div>
-					</div>
-					<button
-						:disabled="!post"
-						:class="post? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'"
-						class="hidden md:block font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer"
-					>
-						Post
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+templ addPostForm(form *forms.CreatePostForm) {
+<div class="flex items-center justify-between md:inline-block p-2 m-2 rounded-full cursor-pointer">
+  <button :disabled="!post" :class="post ? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'"
+    class="md:hidden font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer">
+    Post
+  </button>
+  <div class="w-full flex">
+    <div class="ml-3.5 mr-2">
+      <!-- <img class="rounded-full" width="55" src="randImg1"/> -->
+    </div>
+    <div class="w-full">
+      <div class="inline-block">
+        <div class="flex items-center border border-gray-700 rounded-full">
+          <span class="text-[#1c9cef] p-0.5 pl-3.5 font-extrabold">Everyone</span>
+          <span class="pr-2.5">
+            @ChevronDownIcon(" size-4 text-[#1c9cef]")
+          </span>
+        </div>
+      </div>
+      <div>
+        <form x-target="posts_list addPostForm addPostFormModal" id="addPostFormModal" method="POST" action="/posts"
+          class="w-full">
+          <textarea cols="50" rows="4" placeholder="What is Happening?!" x-model="post" ref="textarea" name="content"
+            class="w-full bg-black border-0 mt-2 focus:ring-0 text-white text-[19px] font-extrabold min-h-[120px]"></textarea>
+          if form.FormErrors.Errors["content"] != "" {
+          <span class="text-red-500 text-xs">{ form.FormErrors.Errors["content"] }</span>
+          }
+          <input type="hidden" name="user_id" value={ strconv.Itoa(int(middleware.GetUser(ctx).ID)) } />
+        </form>
+      </div>
+      <div class="w-full">
+        <!-- <video controls v-if="uploadType === 'mp4'" :src="showUpload" class="rounded-xl overflow-auto"></video> -->
+        <img class="rounded-xl min-w-full" />
+      </div>
+      <div class="flex py-2 items-center text-[#1c9cef] font-extrabold">
+        @EarthIcon("size-6 text-[#1c9cef]")
+        Everyone can reply
+      </div>
+      <div class="border-b border-b-gray-700"></div>
+      <div class="flex items-center justify-between py-2">
+        <div class="flex-items-center">
+          <div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+            <label for="fileUpload" class="cursor-pointer">
+              @PhotoIcon("text-[#1c9cef] size-6")
+            </label>
+            <input type="file" id="fileUpload" class="hidden" />
+          </div>
+          <div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+            @GifIcon("text-[#1c9cef] size-6")
+          </div>
+          <div class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer">
+            @SmileIcon("text-[#1c9cef] size-6")
+          </div>
+        </div>
+        <button :disabled="!post" :class="post? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'" type="submit"
+          form="addPostForm" class="hidden md:block font-extrabold text-[16px] p-1.5 px-4 rounded-full cursor-pointer">
+          Post
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+templ ErrorToast(message string) {
+<div id="error_toast" class="absolute right-24 top-100 bottom-10 z-50 w-96 ">
+  <p class="text-white bg-red-500/60 border border-red-500 rounded-xl p-4 text-center">
+    { message }
+  </p>
+</div>
 }

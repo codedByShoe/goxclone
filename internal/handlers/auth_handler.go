@@ -26,15 +26,16 @@ type AuthHandler struct {
 	sessionCookieName string
 }
 
-func NewAuthHandler(db *gorm.DB, ur models.UserRepo, sr models.SessionRepo) *AuthHandler {
+func NewAuthHandler(db *gorm.DB, ur models.UserRepo, sr models.SessionRepo, scn string) *AuthHandler {
 	h := AuthHandler{
-		Mux:            chi.NewMux(),
-		db:             db,
-		userRepo:       ur,
-		sessionRepo:    sr,
-		passwordhash:   passwordhash.NewHPasswordHash(),
-		createUserForm: forms.NewCreateUserForm(),
-		authUserForm:   forms.NewAuthenticateUserForm(),
+		Mux:               chi.NewMux(),
+		db:                db,
+		userRepo:          ur,
+		sessionRepo:       sr,
+		passwordhash:      passwordhash.NewHPasswordHash(),
+		createUserForm:    forms.NewCreateUserForm(),
+		authUserForm:      forms.NewAuthenticateUserForm(),
+		sessionCookieName: scn,
 	}
 
 	h.Route("/", func(r chi.Router) {
@@ -158,7 +159,7 @@ func createCookie(userid uint, sessionid string, cookiename string) *http.Cookie
 		Value:    cookieValue,
 		Expires:  expiration,
 		Path:     "/",
-		HttpOnly: false,
+		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	}
 }
